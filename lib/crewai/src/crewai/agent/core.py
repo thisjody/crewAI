@@ -1395,6 +1395,8 @@ class Agent(BaseAgent):
 
     def _get_knowledge_search_query(self, task_prompt: str, task: Task) -> str | None:
         """Generate a search query for the knowledge base based on the task description."""
+        from crewai.hooks.dispatch import HookAborted
+
         crewai_event_bus.emit(
             self,
             event=KnowledgeQueryStartedEvent(
@@ -1437,6 +1439,8 @@ class Agent(BaseAgent):
                 ),
             )
             return rewritten_query
+        except HookAborted:
+            raise
         except Exception as e:
             crewai_event_bus.emit(
                 self,
